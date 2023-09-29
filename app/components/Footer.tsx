@@ -34,7 +34,7 @@ const SOCIAL_ITEMS = [
 const Footer: React.FC<IFooterProps> = (props) => {
   return (
     <div className="bg-independence">
-      <div className="container py-6">
+      <div className="container mx-auto py-6">
         <div className="flex flex-col gap-6">
           <div className="flex justify-between items-center">
             <div className="flex gap-6 items-center">

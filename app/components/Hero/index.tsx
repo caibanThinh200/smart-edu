@@ -59,7 +59,7 @@ const Hero: React.FC<IHeroProps> = (props) => {
                 </div>
                 <div>
                   <Image
-                    src={"/svg/book.svg"}
+                    src={"/svg/graduation-hat.svg"}
                     alt="book"
                     width={44}
                     height={44}

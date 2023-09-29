@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       container: {
-        padding: "5rem",
+        padding: "3rem",
       },
       backgroundImage: {
         "gradient-green":
@@ -20,7 +20,8 @@ const config: Config = {
         "azureish-white": "#DCF3E7",
         "primary-green": "#54AB72",
         independence: "#4B5563",
-        nyanza: "#E1FFE9"
+        nyanza: "#E1FFE9",
+        charcoal: "#374151"
       },
     },
   },
