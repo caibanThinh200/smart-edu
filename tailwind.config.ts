@@ -21,7 +21,9 @@ const config: Config = {
         "primary-green": "#54AB72",
         independence: "#4B5563",
         nyanza: "#E1FFE9",
-        charcoal: "#374151"
+        charcoal: "#374151",
+        'dark-jungle-green': "#0F172A",
+        "blue-berry": "#3F83F8"
       },
     },
   },

@@ -1,8 +1,11 @@
-import Course from "./components/Courses";
-import Hero from "./components/Hero";
-import Lecture from "./components/Lectures";
-import News from "./components/News";
-import Story from "./components/Story";
+import dynamic from "next/dynamic";
+
+const Course = dynamic(() => import("./components/Courses"));
+const Hero = dynamic(() => import("./components/Hero"));
+const Lecture = dynamic(() => import("./components/Lectures"));
+const News = dynamic(() => import("./components/News"));
+const Story = dynamic(() => import("./components/Story"));
+const ImageSlide = dynamic(() => import("./components/ImageSlide"));
 
 export default function Home() {
   return (
@@ -12,6 +15,7 @@ export default function Home() {
       <Story />
       <Lecture />
       <Course />
+      <ImageSlide />
     </div>
   );
 }
