@@ -1,12 +1,38 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement } from "chart.js";
+import { twMerge } from "tailwind-merge";
 Chart.register(ArcElement);
+
+interface WordResult {
+  Word: string;
+  Phonemes: {
+    Phoneme?: string;
+    PronunciationAssessment?: {
+      NBestPhonemes: {
+        Phoneme: string;
+      }[];
+    };
+  }[];
+  PronunciationAssessment?: {
+    AccuracyScore: number;
+    ErrorType: string;
+  };
+  Syllables: {
+    Syllable: string;
+  }[];
+}
 
 const SPEECH_KEY = "afc6b1de18844a51a7e0bb13d06a26a7";
 const SPEECH_REGION = "eastus";
@@ -23,6 +49,7 @@ export function SpeechToTextComponent() {
     completeness: 0,
     fluency: 0,
   });
+  const [wordDetail, setWordDetail] = useState<Array<WordResult>>([]);
   const [myTranscript, setMyTranscript] = useState("");
   const [recognizingTranscript, setRecTranscript] = useState("");
 
@@ -38,7 +65,7 @@ export function SpeechToTextComponent() {
       audioConfig.current
     );
 
-    var reference_text = "What's the weather like ?";
+    var reference_text = "What's the weather like today ?";
     // create pronunciation assessment config, set grading system, granularity and if enable miscue based on your requirement.
     const pronunciationAssessmentConfig = new sdk.PronunciationAssessmentConfig(
       reference_text,
@@ -55,7 +82,6 @@ export function SpeechToTextComponent() {
       //   console.log("pronunciation assessment for: ", result.text);
       var pronunciation_result =
         sdk.PronunciationAssessmentResult.fromResult(result);
-      console.log(pronunciation_result);
       setPronouciationScore({
         accuracy: pronunciation_result.accuracyScore,
         pronunciation: pronunciation_result.pronunciationScore,
@@ -79,6 +105,8 @@ export function SpeechToTextComponent() {
       //       );
       //     }
       //   );
+      // console.log(pronunciation_result.detailResult.Words);
+      setWordDetail(pronunciation_result.detailResult.Words);
       (recognizer.current as sdk.SpeechRecognizer).close();
     }
 
@@ -87,23 +115,14 @@ export function SpeechToTextComponent() {
     ) => {
       const result = event.result;
       onRecognizedResult(result);
-      //   console.log("Recognition result:", result);
-
-      //   if (result.reason === sdk.ResultReason.RecognizedSpeech) {
-      //     const transcript = result.text;
-      //     console.log("Transcript: -->", transcript);
-      //     // Call a function to process the transcript as needed
-
-      //     setMyTranscript(transcript);
-      //   }
     };
 
     const processRecognizingTranscript = (event: any) => {
       const result = event.result;
-      console.log("Recognition result:", result);
+      // console.log("Recognition result:", result);
       if (result.reason === sdk.ResultReason.RecognizingSpeech) {
         const transcript = result.text;
-        console.log("Transcript: -->", transcript);
+        // console.log("Transcript: -->", transcript);
         // Call a function to process the transcript as needed
 
         setRecTranscript(transcript);
@@ -113,7 +132,7 @@ export function SpeechToTextComponent() {
     (recognizer.current as sdk.SpeechRecognizer).recognizeOnceAsync(function (
       successfulResult
     ) {
-      console.log(successfulResult);
+      // console.log(successfulResult);
       onRecognizedResult(successfulResult);
     });
 
@@ -169,6 +188,29 @@ export function SpeechToTextComponent() {
       }
     );
   };
+
+  const getColorByPoint = useCallback((point: number) => {
+    console.log(point < 60);
+    let colorClass = "";
+    switch (true) {
+      case (point <= 100 && point >= 80): {
+        colorClass = "text-primary-green";
+        break;
+      }
+      case point < 80 && point >= 60: {
+        colorClass = "text-yellow-600";
+        break;
+      }
+      case point < 60: {
+        colorClass = "text-red-600";
+        break;
+      }
+      default:
+        colorClass = "text-primary-green";
+    }
+
+    return colorClass;
+  }, []);
 
   const options = useMemo(
     () => ({
@@ -233,8 +275,9 @@ export function SpeechToTextComponent() {
 
   return (
     <div className="min-h-[300px] smart-edu-block">
-      <p className="mb-10"><b>Paragraph:</b> What's the weather like today ?</p>
-      {/* <button onClick={pauseListening}>Pause Listening</button> */}
+      <p className="mb-10">
+        <b>Paragraph:</b> What's the weather like today ?
+      </p>
       <button
         className="mr-5 rounded-full bg-primary-green text-white px-5 py-2"
         onClick={resumeListening}
@@ -242,25 +285,6 @@ export function SpeechToTextComponent() {
         Start Recording
       </button>
       <button onClick={stopListening}>Stop Recording</button>
-
-      {/* <div className="flex flex-col gap-10 mt-10">
-        <div className="flex gap-3">
-          <p>Accuray score:</p>
-          <p>{pronouciationScore.accuracy}</p>
-        </div>
-        <div className="flex gap-3">
-          <p>Pronunciation score:</p>
-          <p>{pronouciationScore.pronunciation}</p>
-        </div>
-        <div className="flex gap-3">
-          <p>Fluency score:</p>
-          <p>{pronouciationScore.fluency}</p>
-        </div>
-        <div className="flex gap-3">
-          <p>Completeness score:</p>
-          <p>{pronouciationScore.completeness}</p>
-        </div>
-      </div> */}
       <div className="mt-10 grid grid-cols-4">
         <div className="flex flex-col gap-10 items-center">
           <h3>Accuracy</h3>
@@ -283,11 +307,7 @@ export function SpeechToTextComponent() {
         <div className="flex flex-col gap-10 items-center">
           <h3>Fluency</h3>
           <h3>{pronouciationScore.fluency}</h3>
-          <Doughnut
-            className="scale-75"
-            data={fluencyData}
-            options={options}
-          />
+          <Doughnut className="scale-75" data={fluencyData} options={options} />
         </div>
         <div className="flex flex-col gap-10 items-center">
           <h3>Completeness</h3>
@@ -298,6 +318,29 @@ export function SpeechToTextComponent() {
             options={options}
           />
         </div>
+      </div>
+      <div className="mt-10 flex gap-5 justify-center">
+        {wordDetail.map((word, index) => (
+          <div className="text-center" key={index}>
+            <p className="text-[20px]">{word.Word}</p>
+            <p
+              className={twMerge(
+                "text-[20px] mt-3",
+                getColorByPoint(
+                  word.PronunciationAssessment?.AccuracyScore as number
+                )
+              )}
+            >
+              {word.PronunciationAssessment?.AccuracyScore}
+            </p>
+            {word.PronunciationAssessment?.ErrorType !== "None" && (
+              <p className="mt-3 text-red-600">
+                {word.PronunciationAssessment?.ErrorType}
+              </p>
+            )}
+          </div>
+        ))}
+        {/* { pronunciation_result.detailResult.Words} */}
       </div>
     </div>
   );
