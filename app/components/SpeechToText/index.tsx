@@ -88,24 +88,6 @@ export function SpeechToTextComponent() {
         completeness: pronunciation_result.completenessScore,
         fluency: pronunciation_result.fluencyScore,
       });
-      //   console.log("  Word-level details:");
-      //   _.forEach(
-      //     pronunciation_result.detailResult.Words,
-      //     (word: any, idx: any) => {
-      //       console.log(
-      //         "    ",
-      //         idx + 1,
-      //         ": word: ",
-      //         word.Word,
-      //         "\taccuracy score: ",
-      //         word.PronunciationAssessment.AccuracyScore,
-      //         "\terror type: ",
-      //         word.PronunciationAssessment.ErrorType,
-      //         ";"
-      //       );
-      //     }
-      //   );
-      // console.log(pronunciation_result.detailResult.Words);
       setWordDetail(pronunciation_result.detailResult.Words);
       (recognizer.current as sdk.SpeechRecognizer).close();
     }
@@ -340,7 +322,6 @@ export function SpeechToTextComponent() {
             )}
           </div>
         ))}
-        {/* { pronunciation_result.detailResult.Words} */}
       </div>
     </div>
   );

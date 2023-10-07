@@ -2156,6 +2156,11 @@ react-audio-voice-recorder@^2.2.0:
     "@ffmpeg/ffmpeg" "^0.11.6"
     react-audio-visualize "^1.1.3"
 
+react-card-flip@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/react-card-flip/-/react-card-flip-1.2.2.tgz#bb5ae071b89cec46788aa3861f990a7e61f97bf8"
+  integrity sha512-EGAdHsH0OIU3Rbfevr8bZB0yN/zBj2Jq9bvtNfyFKYWUjx7zTF+4aEJF7BzA4mRr2pb1nHRWmZFRtA9rOArcoA==
+
 react-chartjs-2@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-5.2.0.tgz#43c1e3549071c00a1a083ecbd26c1ad34d385f5d"
